@@ -1,8 +1,10 @@
 const http = require('http');
-const url = require('url');
+const { URL } = require('url');
 const fs = require('fs');
 http.createServer((request, response) => {
-  const path = url.parse(request.url, true).pathname; // url에서 path 추출
+  const baseURL = 'http://' + request.headers.host + '/';
+  const myURL = new URL(request.url, baseURL);
+  const path = myURL.pathname; // url에서 path 추출
   if (request.method === 'GET') { // GET 요청이면
     if (path === '/about') { // 주소가 /about이면
       response.writeHead(200,{'Content-Type':'text/html'}); // header 설정
@@ -25,4 +27,7 @@ http.createServer((request, response) => {
       response.end('주소가 없습니다');
     }
   }
-}).listen(8080);
+}).listen(8080).on("listening", () => {
+  console.log(`Server is runnning on port 8080.`);
+  console.log(`http://localhost:8080`);
+});
